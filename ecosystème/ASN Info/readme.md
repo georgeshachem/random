@@ -1,0 +1,2 @@
+This script takes text file with the following format: ASN : Providers : Clients on each line
+It will output a text file with the ASN's name for each one containing each ASN providers and clients number and name.
