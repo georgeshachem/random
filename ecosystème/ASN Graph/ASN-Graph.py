@@ -7,7 +7,6 @@ with open('asconn.txt') as f:
     lines = f.readlines()
     lines = [x.strip() for x in lines]
 
-all_asn = dict()
 asn_to_draw = ['31126', '39010']
 selected_nodes = {'31126', '39010'}
 
@@ -16,8 +15,6 @@ for line in lines:
     main_asn = data[0].strip()
     fournisseurs = [x.strip() for x in data[1].split(' ') if x]
     clients = [x.strip() for x in data[2].split(' ') if x]
-
-    all_asn[main_asn] = {'fournisseurs': fournisseurs, 'clients': clients}
 
     for asn in fournisseurs:
         G.add_edge(asn, main_asn)
