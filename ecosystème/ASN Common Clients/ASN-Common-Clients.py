@@ -8,7 +8,7 @@ clients = list()
 
 for line in lines:
     data = line.split(":")
-    clients.append([x for x in data[2].split(' ') if x])
+    clients.append([x.strip() for x in data[2].split(' ') if x])
 
 common_clients = set.intersection(*map(set, clients))
 
