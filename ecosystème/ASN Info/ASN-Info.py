@@ -6,12 +6,12 @@ with open('asn-42020.txt') as f:
 
 for line in lines:
     data = line.split(":")
-    main_asn = data[0]
-    fournisseurs = [x for x in data[1].split(' ') if x]
-    clients = [x for x in data[2].split(' ') if x]
+    main_asn = data[0].strip()
+    fournisseurs = [x.strip() for x in data[1].split(' ') if x]
+    clients = [x.strip() for x in data[2].split(' ') if x]
 
     r = requests.get(
-        'https://stat.ripe.net/data/abuse-contact-finder/data.json?resource={}'.format(main_asn.strip()))
+        'https://stat.ripe.net/data/abuse-contact-finder/data.json?resource={}'.format(main_asn))
     main_asn_name = r.json()['data']['holder_info']['name']
     with open('{} - {}.txt'.format(main_asn, main_asn_name), 'w+') as f:
         f.write('Main:\n')
@@ -22,7 +22,7 @@ for line in lines:
     with open('{} - {}.txt'.format(main_asn, main_asn_name), 'a+') as f:
         for asn in fournisseurs:
             r = requests.get(
-                'https://stat.ripe.net/data/abuse-contact-finder/data.json?resource={}'.format(asn.strip()))
+                'https://stat.ripe.net/data/abuse-contact-finder/data.json?resource={}'.format(asn))
             asn_name = r.json()['data']['holder_info']['name']
             f.write("{} - {}\n".format(asn, asn_name))
         f.write('\n')
