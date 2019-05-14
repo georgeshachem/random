@@ -2,6 +2,7 @@ import sys
 from openalpr import Alpr
 import picamera
 from time import sleep
+import sqlite3
 
 alpr = Alpr("us", "/etc/openalpr/openalpr.conf", "/home/pi/openalpr/runtime_data/")
 if not alpr.is_loaded():
@@ -10,6 +11,9 @@ if not alpr.is_loaded():
 
 alpr.set_top_n(20)
 alpr.set_default_region("md")
+
+conn = sqlite3.connect('blacklist.db')
+c = conn.cursor()
 
 with picamera.PiCamera() as camera:
     camera.start_preview()
@@ -30,9 +34,9 @@ with picamera.PiCamera() as camera:
             except Exception as e:
                 print(e)
 
-            with open('blacklist.txt', 'r') as f:
-                x = f.readlines()
-            x = [i.strip() for i in x]
+            c.execute("SELECT number FROM blacklist")
+            x = c.fetchall()
+            x = [i[0] for i in x]
 
             if plate in x:
                 print("Blacklist")
