@@ -3,6 +3,21 @@ from openalpr import Alpr
 import picamera
 from time import sleep
 import sqlite3
+import time
+import paho.mqtt.client as mqtt
+
+pi_id = 123
+
+mqtt_broker_address = "212.98.137.194"
+mqtt_port = 1883
+
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code " + str(rc))
+
+client = mqtt.Client()
+client.username_pw_set("user", "bonjour")
+client.on_connect = on_connect
+client.connect(mqtt_broker_address, mqtt_port, 60)
 
 alpr = Alpr("us", "/etc/openalpr/openalpr.conf", "/home/pi/openalpr/runtime_data/")
 if not alpr.is_loaded():
@@ -40,6 +55,11 @@ with picamera.PiCamera() as camera:
 
             if plate in x:
                 print("Blacklist")
+                data = dict()
+                data['NbrPlate'] = plate
+                data['Time'] = time.time()
+                data['ID'] = pi_id
+                client.publish("blacklist_ul", payload=data)
             else:
                 print("Good")
 
