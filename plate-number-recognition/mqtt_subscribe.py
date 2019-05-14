@@ -5,7 +5,6 @@ import sqlite3
 database = "blacklist.db"
 conn = sqlite3.connect(databse)
 c = conn.cursor()
-table = "blacklist"
  
 def on_connect(client, userdata, flags, rc):
  
@@ -24,7 +23,7 @@ def on_message(client, userdata, message):
     message = (message.payload.decode("utf-8"))
     print ("Message received: "  + message)
     try:
-        c.execute('INSERT INTO {0} VALUES {1}'.format(table, message))
+        c.execute('INSERT INTO blacklist VALUES (?)',(message,))
     except sqlite3.IntegrityError as e:
         print('sqlite error: ', e.args[0])
     conn.commit()
