@@ -1,10 +1,6 @@
 import paho.mqtt.client as mqttClient
 import time
 import sqlite3
-
-database = "blacklist.db"
-conn = sqlite3.connect(databse)
-c = conn.cursor()
  
 def on_connect(client, userdata, flags, rc):
  
@@ -22,12 +18,29 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, message):
     message = (message.payload.decode("utf-8"))
     print ("Message received: "  + message)
-    try:
-        c.execute('INSERT INTO blacklist VALUES (?)',(message,))
-    except sqlite3.IntegrityError as e:
-        print('sqlite error: ', e.args[0])
-    conn.commit()
-    
+    if (message[0] == "a"):
+        try:
+            conn = sqlite3.connect("blacklist.db")
+            c = conn.cursor()
+            c.execute('INSERT INTO blacklist VALUES (?)',(message[1:],))
+            conn.commit()
+            print("Added to DB")
+            conn.close()
+        except Exception as e:
+            print('sqlite error: ', e.args[0])
+
+    elif (message[0] == "r"):
+        try:
+            conn = sqlite3.connect("blacklist.db")
+            c = conn.cursor()
+            c.execute('DELETE FROM blacklist WHERE NUMBER = (?)',(message[1:],))
+            conn.commit()
+            print("Deleted from DB")
+            conn.close()
+        except Exception as e:
+            print('sqlite error: ', e.args[0])    
+    else:
+        print("wrong format")
  
 Connected = False   #global variable for the state of the connection
  
@@ -48,7 +61,7 @@ client.loop_start()        #start the loop
 while Connected != True:    #Wait for connection
     time.sleep(0.1)
  
-client.subscribe("test.123")
+client.subscribe("blacklist_dl")
  
 try:
     while True:
