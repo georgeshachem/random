@@ -18,7 +18,7 @@ def on_message(client, userdata, msg):
         data = ast.literal_eval(data)
         print(data)
 
-        base_url = "http://172.16.115.81:4000/Detection/create"
+        base_url = "http://10.81.16.113:4000/Detection/create"
         headers = {
             'Content-Type': "application/json"
         }
