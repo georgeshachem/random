@@ -57,7 +57,7 @@ with picamera.PiCamera() as camera:
                 print("Blacklist")
                 data = dict()
                 data['NbrPlate'] = plate
-                data['Time'] = time.time()
+                data['Time'] = int(time.time())
                 data['ID'] = pi_id
                 client.publish("blacklist_ul", payload=data)
             else:
