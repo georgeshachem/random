@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"os"
 	"testing"
 
@@ -9,28 +10,31 @@ import (
 
 const testDatabasePath = "url_shortener_test.db"
 
-func TestInsertURL(t *testing.T) {
+func InitializeTestDatabase(t *testing.T) *sql.DB {
 	db, err := InitializeDatabase(testDatabasePath)
 	if err != nil {
 		t.Fatalf("Failed to create db: %v", err)
 	}
-	defer db.Close()
+	t.Cleanup(func() {
+		db.Close()
+		os.Remove(testDatabasePath)
+	})
+
+	return db
+}
+
+func TestInsertURL(t *testing.T) {
+	db := InitializeTestDatabase(t)
 
 	longURL := "http://test.com"
-	_, err = InsertURL(db, longURL)
+	_, err := InsertURL(db, longURL)
 	if err != nil {
 		t.Fatalf("Failed to insert URL: %v", err)
 	}
-
-	os.Remove(testDatabasePath)
 }
 
 func TestGetLongURL(t *testing.T) {
-	db, err := InitializeDatabase(testDatabasePath)
-	if err != nil {
-		t.Fatalf("Failed to create db: %v", err)
-	}
-	defer db.Close()
+	db := InitializeTestDatabase(t)
 
 	longURL := "http://test.com"
 	shortURL, err := InsertURL(db, longURL)
@@ -46,6 +50,4 @@ func TestGetLongURL(t *testing.T) {
 	if retrievedLongURL != longURL {
 		t.Errorf("Expected long URL to be %s, got %s", longURL, retrievedLongURL)
 	}
-
-	os.Remove(testDatabasePath)
 }
