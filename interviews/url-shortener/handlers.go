@@ -15,13 +15,13 @@ func CreateShortURLHandler(db *sql.DB) http.HandlerFunc {
 		}
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, "Error decoding the request's body", http.StatusBadRequest)
 			return
 		}
 
 		shortURL, err := InsertURL(db, request.LongURL)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Error in your request", http.StatusInternalServerError)
 			return
 		}
 
